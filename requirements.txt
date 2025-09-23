@@ -1,0 +1,12 @@
+google-api-core
+google-auth
+google-cloud-speech
+google-generativeai
+google-cloud-aiplatform
+google-adk[a2a]
+numpy
+python-dotenv
+requests
+scipy
+sounddevice
+uvicorn
