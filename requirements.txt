@@ -4,6 +4,7 @@ google-cloud-speech
 google-generativeai
 google-cloud-aiplatform
 google-adk[a2a]
+google-cloud-modelarmor
 numpy
 python-dotenv
 requests

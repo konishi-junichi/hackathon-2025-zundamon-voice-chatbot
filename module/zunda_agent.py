@@ -9,8 +9,10 @@ from google.adk.agents import Agent
 from google.genai import types
 from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner
-from google.adk.tools import VertexAiSearchTool
 from google.adk.agents.remote_a2a_agent import RemoteA2aAgent
+from google.api_core.client_options import ClientOptions
+from google.adk.plugins.base_plugin import BasePlugin
+from google.cloud import modelarmor_v1
 
 
 remote_yatai_agent = RemoteA2aAgent(
@@ -20,6 +22,57 @@ remote_yatai_agent = RemoteA2aAgent(
 remote_dayori_agent = RemoteA2aAgent(
     name="福岡市エージェント", agent_card="https://fukuoka-dayori-a2a-agent-96292749133.asia-northeast1.run.app/.well-known/agent.json"
 )
+
+class ModelArmorPlugin(BasePlugin):
+    """A custom plugin that counts agent and tool invocations."""
+
+    def __init__(self) -> None:
+        """Initialize the plugin with counters."""
+        super().__init__(name="model armor plugin")
+        self._model_armor_client = modelarmor_v1.ModelArmorClient(
+            client_options=ClientOptions(
+                api_endpoint = "modelarmor.asia-southeast1.rep.googleapis.com"
+            )
+        )
+        self.template_name = "projects/my-project-20250906/locations/asia-southeast1/templates/zundamon-model-armor"
+
+    # async def after_run_callback(
+    #     self, *, invocation_context
+    # ) -> None:
+    #     data_item = modelarmor_v1.DataItem(text=invocation_context.parts[0].text)
+    #     request = modelarmor_v1.SanitizeModelResponseRequest(
+    #         name=self.template_name,
+    #         model_response_data=data_item,
+    #     )
+    #     try:
+    #         response = self._model_armor_client.sanitize(request=request)
+    #         if response.detection.blocked:
+    #             print("AIエージェントの実行はブロックされました。")
+    #             print(f"理由: {response.detection.reasons}")
+    #         else:
+    #             print("clear")
+    #     except Exception as e:
+    #         print(f"エラーが発生しました: {e}")
+
+    def call_model_armor_api(self, text: str):
+        """Model Armor APIを呼び出す"""
+        data_item = modelarmor_v1.DataItem(text=text)
+        request = modelarmor_v1.SanitizeModelResponseRequest(
+            name=self.template_name,
+            model_response_data=data_item,
+        )
+        try:
+            # Model Armor APIを呼び出し
+            response = self._model_armor_client.sanitize_model_response(request=request)
+            # 結果の処理
+            if response.sanitization_result.invocation_result != True:
+                print(f"AIエージェントの実行はブロックされました。\n理由: {response.sanitization_result}")
+                return False
+        except Exception as e:
+            print(f"エラーが発生しました: {e}")
+            return False
+        return True
+
 
 class ZundaAgent():
     """ずんだもんのエージェントクラス"""
@@ -31,6 +84,8 @@ class ZundaAgent():
         self.__SESSION_ID = session_id
         # セッション生成
         self.__session_service = InMemorySessionService()
+        # モデルアーマー
+        self.__model_armor_ins = ModelArmorPlugin()
 
         # Vertex AIのリージョンを設定
         self.__LOCATION = os.environ.get("GOOGLE_CLOUD_REGION", "asia-northeast1")
@@ -92,7 +147,8 @@ class ZundaAgent():
             self.__runner = Runner(
                 agent=self.__root_agent,
                 app_name=self.__APP_NAME,
-                session_service=self.__session_service
+                session_service=self.__session_service,
+                # plugins=[ModelArmorPlugin()]
             )
         except google.auth.exceptions.DefaultCredentialsError:
             print("!!! ERROR: 認証に失敗しました。")
@@ -120,7 +176,12 @@ class ZundaAgent():
                 elif event.actions and event.actions.escalate:
                     final_response_text = f"Agent escalated: {event.error_message or 'No specific message.'}"
                     break
-        print(f"<<< Zundamon Agent: {final_response_text}")
+        # Model Armorでの応答内容チェック
+        if self.__model_armor_ins.call_model_armor_api(final_response_text):
+            print(f"<<< Zundamon Agent: {final_response_text}")
+        else:
+            final_response_text = "申し訳ないのだが、その内容にはお答えできないのだ。別の質問をお願いするのだ〜。"
+            print(f"<<< Zundamon Agent: {final_response_text}")
         return final_response_text
 
     async def run_conversation(self, query: str = ""):

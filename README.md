@@ -13,6 +13,8 @@
 - RAG<br>
 　Google Cloud StorageおよびBigQueryに福岡市のデータ基盤情報を連携する。<br>
 　それらの情報をVertex AI SearchおよびAIエージェントを使いRAGを実装する。
+- AIの安全強化（RAI）<br>
+　AIの生成結果に対して、Google CloudのModel Armorを使用することで安全性を強化する。
 
 ## プロジェクト構成
 - ### 全体アーキテクチャ
