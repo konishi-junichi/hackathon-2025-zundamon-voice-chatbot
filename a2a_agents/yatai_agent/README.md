@@ -27,7 +27,7 @@ gcloud run deploy fukuoka-yatai-a2a-agent \
     --memory "4Gi" \
     --region="asia-northeast1" \
     --project="YOUR_PROJECT_ID" \
-    --service-account a2a-service-account \
+    --service-account YOUR_SERVICE_ACCOUNT_NAME \
     --set-env-vars=GOOGLE_GENAI_USE_VERTEXAI=true,\
 GOOGLE_CLOUD_PROJECT="YOUR_PROJECT_ID",\
 GOOGLE_CLOUD_LOCATION="asia-northeast1",\
