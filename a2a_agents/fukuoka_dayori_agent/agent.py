@@ -4,7 +4,7 @@ from google.adk.agents import Agent
 from google.adk.tools import VertexAiSearchTool
 
 root_agent = Agent(
-    name='fukuoka_dayori_agent',
+    name='福岡市ジェネラルエージェント',
     model="gemini-2.5-flash",
     description=('福岡市の市政だよりのデータを基に質問に答えるエージェントです。'),
     instruction=(
