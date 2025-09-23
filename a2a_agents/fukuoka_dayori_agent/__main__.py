@@ -53,11 +53,11 @@ async def main(host, port):
         skills=[
             AgentSkill(
                 id='get_fukuoka_dayori_info',
-                name='Get Fukuoka Dayori Info',
+                name='福岡市の市政だより情報の取得',
                 description='福岡市の市政だよりに関する質問に答えます。',
-                tags=['fukuoka', 'dayori', 'get'],
+                tags=['fukuoka', 'dayori', '福岡', '市政だより', '行政', '生活', 'ゴミ', '子育て', '防災', '観光', 'イベント', '交通', '健康', '地域'],
                 examples=[
-                    '福岡市のゴミの出し方を教えて',
+                    '福岡市のゴミの出し方を教えて', '子育て支援の情報は？', '防災に関する最新情報を教えて', '福岡市で開催されるイベントは？', '公共交通機関の利用方法を教えて',
                 ],
             )
         ],

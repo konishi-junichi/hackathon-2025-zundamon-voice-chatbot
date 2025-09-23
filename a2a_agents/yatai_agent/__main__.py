@@ -53,11 +53,11 @@ async def main(host, port):
         skills=[
             AgentSkill(
                 id='get_yatai_info',
-                name='Get Fukuoka Yatai Info',
+                name='福岡の屋台情報の取得',
                 description='福岡の屋台に関する質問に答えます。',
-                tags=['fukuoka', 'yatai', 'get'],
+                tags=['fukuoka', 'yatai', '福岡', '屋台', 'グルメ', '観光', '旅行'],
                 examples=[
-                    '福岡のおすすめのラーメン屋台を教えて',
+                    '福岡のおすすめのラーメン屋台を教えて', '美味しい屋台はどこにある？', '屋台の営業時間を教えて', '屋台で使える決済方法は？', '福岡の屋台で人気のメニューは？',
                 ],
             )
         ],
