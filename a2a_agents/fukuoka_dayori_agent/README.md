@@ -17,7 +17,8 @@
    ```
 
 3. デプロイする
-　マネージドのサービスアカウント（XXXXXX@cloudbuild.gserviceaccount.com, XXXXX-compute@developer.gserviceaccount.com）に「Artifact Registry 書き込み」の権限を付与しておくこと。
+　マネージドのサービスアカウント（XXXXXX@cloudbuild.gserviceaccount.com, XXXXX-compute@developer.gserviceaccount.com）に「Artifact Registry 書き込み」の権限を付与しておくこと。<br>
+    ※サービスアカウントは設定不要（Google Cloud側は、Vertex AIのAPI有効化とVertex AI Searchのデータストア作成など必要）
 ```shell
 gcloud auth configure-docker asia-docker.pkg.dev
 gcloud run deploy fukuoka-dayori-a2a-agent \
